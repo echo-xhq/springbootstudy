@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>弹窗</title>
+    <link rel="stylesheet" href="https://cdn.amazeui.org/amazeui/2.7.2/css/amazeui.min.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js">
+    </script>
+</head>
+<body>
+  <button class="am-btn am-btn-primary am-btn-block" data-am-modal="{target: '#myModal'}">搜索文章</button>
+  <div class="am-modal am-modal-alert" tabindex="-1" id="myModal">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd">搜索文章</div>
+    <div class="am-modal-bd">
+      <form id="search-form">
+        <div class="am-form-group">
+          <label for="search-key">关键词：</label>
+          <input type="text" id="search-key" placeholder="请输入关键词">
+        </div>
+        <div class="am-form-group">
+          <button class="am-btn am-btn-primary am-btn-block" type="submit">搜索</button>
+        </div>
+      </form>
+      <div id="search-result"></div>
+    </div>
+    <div class="am-modal-footer">
+      <button class="am-btn am-btn-default" data-am-modal-cancel>关闭</button>
+    </div>
+  </div>
+  </div>
+<script>
+  $(document).ready(function() {
+    $('#search-form').submit(function(e) {
+      e.preventDefault(); // 阻止默认的表单提交事件\n
+      var searchKey = $('#search-key').val().trim();
+      if (searchKey === '') {
+        alert('请输入搜索关键词');
+        return;
+      }
+      var apiUrl = 'https://arxivxplorer.com/?query=' + encodeURIComponent(searchKey);
+      $.get(apiUrl, function(data) {
+        var html = '';
+        if (data.length > 0) {
+          html = data;
+          // html = '<ul class="am-list">';
+          // for (var i = 0; i < data.length; i++) {
+          //   html += '<li><a href="#">' + data[i].title + '</a></li>';
+          // }
+          // html += '</ul>';
+        } else {
+          html = '<p class="am-text-center">未找到相关文章</p>';
+        }
+        $('#search-result').html(html);
+      });
+    });
+  });
+
+</script>
+</body>
+</html>

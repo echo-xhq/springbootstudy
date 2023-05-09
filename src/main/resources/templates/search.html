@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>搜索弹窗</title>
+    <link rel="stylesheet" href="https://cdn.amazeui.org/amazeui/2.7.2/css/amazeui.min.css"/>
+</head>
+
+
+<body>
+<div class="am-g">
+    <div class="am-u-sm-12">
+        <div class="am-form-group">
+            <input type="text" id="searchText" class="am-form-field am-round" placeholder="请输入关键词">
+        </div>
+        <button id="searchButton" class="am-btn am-btn-primary am-round">搜索</button>
+        <button id="voiceButton" class="am-btn am-btn-default am-round">语音搜索</button>
+    </div>
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.amazeui.org/amazeui/2.7.2/js/amazeui.min.js"></script>
+<script>
+    $(function () {
+        var recognition = new webkitSpeechRecognition();
+        recognition.lang = window.navigator.language || 'en-US';
+        recognition.onresult = function (event) {
+            var result = event.results[event.resultIndex][0].transcript;
+            $('#searchText').val(result);
+            doSearch(result);
+        }
+
+        $('#voiceButton').click(function () {
+            recognition.start();
+        });
+
+        $('#searchButton').click(function () {
+            var searchText = $('#searchText').val();
+            doSearch(searchText);
+        });
+
+        function doSearch(keyword) {
+            $.ajax({
+                url: '/search',
+                type: 'POST',
+                data: JSON.stringify({
+                    keyword: keyword
+                }),
+                contentType: 'application/json',
+                success: function (data) {
+                    // 显示搜索结果
+                    console.log(data);
+                },
+                error: function () {
+                    alert('搜索失败');
+                }
+            });
+        }
+    });
+</script>
+
+
+
+
+
+<!--<script>-->
+
+<!--    // 弹窗 show/hide-->
+<!--    var $searchModal = $('#search-modal');-->
+<!--    $('#open-search-modal').click(function() {-->
+<!--        $searchModal.modal({-->
+<!--            trelatedTarget: this,-->
+<!--            tcloseOnConfirm: false,-->
+<!--            tcloseOnCancel: false});-->
+<!--    });-->
+
+<!--    // 搜索-->
+<!--    $('#search').click(function() {-->
+<!--        var searchKey = $('#search-key').val();-->
+<!--        // 获取搜索关键词-->
+<!--        if (searchKey === '') {-->
+<!--            alert('请输入搜索关键词！');-->
+<!--            return;-->
+<!--        }-->
+
+<!--            var data = {-->
+<!--                // 模拟搜索结果数据-->
+<!--                total: 3,-->
+<!--                list: [ {-->
+<!--                    ttitle: '搜索结果1',-->
+<!--                    url: 'http://www.baidu.com'-->
+<!--                },-->
+<!--                    {-->
+<!--                        ttitle: '搜索结果2',-->
+<!--                        url: 'http://www.sogou.com'-->
+<!--                    },-->
+<!--                    {-->
+<!--                        ttitle: '搜索结果3',-->
+<!--                        url: 'http://www.google.com'-->
+<!--                    }-->
+<!--                ]-->
+<!--            };-->
+<!--            showResult(data);-->
+<!--            $searchModal.modal('close');-->
+<!--        }-->
+<!--    );-->
+<!--    // 展示搜索结果-->
+<!--    function showResult(data) {-->
+<!--        var listHtml = '';-->
+<!--        for (var i = 0; i < data.list.length; i++) {-->
+<!--            listHtml += '<li><a href="' + data.list[i].url + '">' + data.list[i].title + '</a></li>';-->
+<!--        }-->
+<!--        var resultHtml = '<div class="am-modal am-modal-no-btn" tabindex="-1" id="search-result-modal"><div class="am-modal-dialog"><div class="am-modal-hd">搜索结果：共 ' + data.total + ' 条记录</div><div class="am-modal-bd"><ul class="am-list">' + listHtml + '</ul></div></div></div>'-->
+<!--        $('body').append(resultHtml);-->
+<!--        var $searchResultModal = $('#search-result-modal');-->
+<!--        $searchResultModal.modal({-->
+<!--            relatedTarget: this,-->
+<!--            closeViaDimmer: false,-->
+<!--            onConfirm: function(options) {-->
+
+<!--                $searchResultModal.modal('close');-->
+<!--            },-->
+<!--            onCancel: function(options) {-->
+<!--                $searchResultModal.modal('close');-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+<!--</script>-->
+</body>
+</html>

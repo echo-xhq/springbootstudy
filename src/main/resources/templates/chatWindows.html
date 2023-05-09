@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天窗口</title>
+  <!-- 引入amazeUI样式文件 -->
+  <link rel="stylesheet" href="https://cdn.staticfile.org/amazeui/2.7.2/css/amazeui.min.css">
+  <style>
+      /* 消息内容区域 */
+      #msg-content {
+          position: relative;
+          overflow: auto;
+          display: flex;
+          flex: auto;
+          flex-direction: column;
+          justify-content: center;
+          overflow-y: scroll;
+          height: 400px;
+      }
+
+      /*!* 消息内容区域中的消息条目 *!*/
+      /*#msg-content p {*/
+      /*    margin: 10px;*/
+      /*}*/
+
+      /* 左对齐 */
+      .left {
+          text-align: left;
+      }
+
+      /* 右对齐 */
+      .right {
+          text-align: right;
+      }
+
+      /* 消息样式 */
+      .message {
+          position: relative;
+          display: inline-block;
+          color: #fff;
+          background-color: #0c97de;
+          border-radius: 10px;
+          padding: 10px;
+          /*max-width: 70%;*/
+          margin-bottom: 10px;
+      }
+
+      /* 消息发送者样式 */
+      .from {
+          position: absolute;
+          left: 50px;
+          top: 0;
+          width: 40px;
+          font-size: 12px;
+          color: #888;
+      }
+
+
+
+
+
+  </style>
+</head>
+<body>
+
+<button class="am-btn am-btn-primary am-btn-sm" data-am-modal="{target: '#chat-modal'}">聊天</button>
+
+<!-- 聊天对话框弹窗 -->
+<div class="am-modal am-modal-no-btn" tabindex="-1" id="chat-modal">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd">聊天对话框</div>
+    <div class="am-modal-bd">
+      <!-- 消息内容区域 -->
+      <div id="msg-content">
+<!--        <p class="right web"><strong></strong> </p>-->
+<!--        <p class="left server"> <strong></strong></p>-->
+<!--        <p class="right web"><strong></strong> </p>-->
+<!--        <p class="left server"> <strong></strong></p>-->
+      </div>
+
+
+      <!-- 消息输入区域 -->
+      <form class="am-form" id="msg-form">
+        <div class="am-form-group">
+          <input type="text" id="msg-input" placeholder="请输入消息内容">
+        </div>
+        <button type="submit" class="am-btn am-btn-default">发送</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 引入jQuery和amazeUI JavaScript文件 -->
+<script src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/amazeui/2.7.2/js/amazeui.min.js"></script>
+<!-- 引入WebSocket JavaScript文件 -->
+<script src="websocket.js"></script>
+
+<script>
+    // 获取消息输入框和消息内容区域
+    var $msgInput = $('#msg-input');
+    var $msgContent = $('#msg-content');
+
+    // 连接WebSocket服务器
+    var socket = new WebSocket('ws://localhost:8080/chat');
+
+    // 监听WebSocket连接打开事件
+    socket.onopen = function(event) {
+        console.log('WebSocket连接已打开');
+    };
+
+    // 监听WebSocket接收到消息事件
+    socket.onmessage = function(event) {
+        // 解析JSON格式的消息
+        var data = JSON.parse(event.data);
+        // 在消息内容区域添加接收到的消息
+        $msgContent.append('<p class="left"><span class="left">server: </span><span class="message">' + data.message + '</span></p>');
+    };
+
+    // 监听消息表单的提交事件
+    $('#msg-form').submit(function(event) {
+        // 阻止表单默认提交行为
+        event.preventDefault();
+        // 获取消息内容
+        var message = $msgInput.val().trim();
+        if (message.length === 0) {
+            // 如果消息内容为空，则不发送消息
+            return;
+        }
+        // 发送消息到WebSocket服务器
+        socket.send(JSON.stringify({
+            from: 'web',
+            to: 'server',
+            message: message
+        }));
+        // 在消息内容区域添加发送的消息
+        $msgContent.append('<p class="left"><span class="left">web: </span><span class="message">' + message + '</span></p>');
+        // 清空消息输入框
+        $msgInput.val('');
+    });
+
+</script>
+
+</body>
+</html>

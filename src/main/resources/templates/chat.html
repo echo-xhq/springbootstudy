@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天</title>
+  <!-- 引入amazeUI的样式文件和JavaScript文件 -->
+  <link rel="stylesheet" href="https://cdn.staticfile.org/amazeui/2.7.2/css/amazeui.min.css">
+</head>
+<body>
+<button type="button" class="am-btn am-btn-warning" onclick="downloadImage()">下载图片</button>
+<!-- 定义对话框 -->
+<div class="am-modal am-modal-no-btn" tabindex="-1" id="dialog">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd">对话框</div>
+    <div class="am-modal-bd" id="dialog-content"></div>
+    <div class="am-modal-footer">
+      <span class="am-modal-btn" data-am-modal-cancel>关闭</span>
+    </div>
+  </div>
+</div>
+
+<!-- 定义发送消息的表单 -->
+<form id="send-form">
+  <input type="text" name="message" placeholder="请输入消息">
+  <button type="submit">发送</button>
+</form>
+
+
+<!-- 引入jQuery和amazeUI JavaScript文件 -->
+<script src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/amazeui/2.7.2/js/amazeui.min.js"></script>
+<!-- 引入WebSocket JavaScript文件 -->
+<script src="websocket.js"></script>
+
+<script>
+  $(function() {
+    // 当发送消息的表单被提交时
+    $('#send-form').submit(function() {
+      // 获取输入框中的消息内容
+      var message = $('input[name="message"]').val();
+      // 将消息发送给服务器端
+      $.post('/chat', message, function(data) {
+        // 在对话框中显示服务器端的回复消息
+        $('#dialog-content').append('<p>Server: ' + data + '</p>');
+      });
+      // 清空输入框中的内容
+      $('input[name="message"]').val('');
+      // 阻止表单的默认提交行为
+      return false;
+    });
+
+    // 显示对话框
+    $('#dialog').modal();
+  });
+
+
+  function downloadImage() {
+    // let link = document.createElement('a');
+    // link.download = "AI-generated-image.jpg";
+    // link.href = 'https://oaidalleapiprodscus.blob.core.windows.net/private/org-ukaHF7E6ftu4qLokbCF3n88i/user-P7dIZhtUAOOC5fANyLYbRGtD/img-Iws7GI46nqEJYf0VelliTsPC.png?st=2023-04-17T09%3A26%3A52Z&se=2023-04-17T11%3A26%3A52Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-04-17T08%3A23%3A09Z&ske=2023-04-18T08%3A23%3A09Z&sks=b&skv=2021-08-06&sig=BAjedvFL41sYR6oBlIGFyX5MLPcBXbuftjEh73IlJDI%3D';
+    // link.click();
+    const link = document.createElement('a');
+    link.href = 'https://oaidalleapiprodscus.blob.core.windows.net/private/org-ukaHF7E6ftu4qLokbCF3n88i/user-P7dIZhtUAOOC5fANyLYbRGtD/img-Iws7GI46nqEJYf0VelliTsPC.png?st=2023-04-17T09%3A26%3A52Z&se=2023-04-17T11%3A26%3A52Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-04-17T08%3A23%3A09Z&ske=2023-04-18T08%3A23%3A09Z&sks=b&skv=2021-08-06&sig=BAjedvFL41sYR6oBlIGFyX5MLPcBXbuftjEh73IlJDI%3D';
+    link.download = 'image';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script>
+
+
+</body>
+</html>
